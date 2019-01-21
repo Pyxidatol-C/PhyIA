@@ -35,7 +35,7 @@ The phenomenon of optical diffraction can be roughly defined as the bending of l
 
 \section*{Theory}
 
-\cite{babinet}
+Babinet's principle \cite{babinet}: 
 \begin{displayquote}
     ``Suppose that the eye observes a point source of light. If a small opaque object is placed just off the line of sight, the effects of this object is the same as that of a precisely similar aperture illuminated from the same source.''
 \end{displayquote}
@@ -140,11 +140,16 @@ Qualitatively, the geometry of the diffraction pattern produced when the laser b
 \section*{Processed Data}
 One advantage of having pictures of the diffraction patterns in a digital format is that the experimental data can be processed with computer programs using OpenCV \cite{opencv_library}.
 
+Firstly, a Python script \cite{py_extract} is devised to find the main axis of the diffraction pattern:
+
 \begin{figure}[H]
+    \centering
     \includegraphics[width=\textwidth]{scripts/processed-data/axis}
-    \caption{ . Slit; $\text{width} = \SI{100}{\mm}$. }
+    \caption{Main axis (blue line) of the diffraction pattern. Slit; $\text{width} = \SI{100}{\mm}$. }
     \label{fig:mains-axis}
 \end{figure}
+
+Since the laser beam is red, the BLUE and GREEN channels may be omitted, and the RED channel of the image is extracted. Then, for each pixel along the main axis, the intensity (between 0 and 255, both ends included) is recorded and stored in an array. The results obtained by transforming one picture for each trial are shown below. 
 
 \begin{figure}[H]
     \renewcommand{\thesubfigure}{a}
@@ -201,7 +206,10 @@ One advantage of having pictures of the diffraction patterns in a digital format
         \includegraphics[width=0.48\textwidth]{scripts/processed-data/slits/400}
     }
     
-    \caption{Diffraction patterns produced by slits and wires of similar or identical widths. }
+    \centering
+    \includegraphics[width=\textwidth]{scripts/processed-data/colour-bar.png}
+    
+    \caption{Variation in RED intensity along the main axis of the diffraction pattern. }
     \label{fig:processed-patterns}
 \end{figure}
 
@@ -219,6 +227,7 @@ One advantage of having pictures of the diffraction patterns in a digital format
 \itemsep 0em
     \item Fraunhofer diffraction (approximate) $\neq$ Fresnel diffraction (exact); yet the mathematics of Fresnel diffraction is so complex that the solutions become intractable
     \item Validity of Babinet's principle: the requirements of the screen and aperture/obstacle are not easily met \cite{validity}
+    \item Instead of photographic method, intensity sensor can be used; albeit accurate, this method is time-consuming and requires treatment of speckle noise of the laser
 \end{itemize}
 
 \section*{Conclusion}
