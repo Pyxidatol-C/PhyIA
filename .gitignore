@@ -1,7 +1,7 @@
-.idea
 .DS_Store
-.texpadtmp
+.idea
 .ipynb_checkpoints
 __pycache__
-
+raw
 main.pdf
+.texpadtmp

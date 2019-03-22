@@ -11,7 +11,7 @@
 \usepackage[british]{babel}
 \usepackage[labelfont=bf]{caption}
 \usepackage[caption=false]{subfig}
-\usepackage[style=numeric,backend=biber]{biblatex}
+\usepackage[style=numeric,backend=biber,sorting=none]{biblatex}
 \usepackage[separate-uncertainty=true, multi-part-units=single]{siunitx}
 
 \allowdisplaybreaks
@@ -19,10 +19,12 @@
 \sisetup{detect-all = true}
 \addbibresource{mysources.bib}
 
+\DeclareSIUnit \px {px}
+
 \title{
 \textbf{Physics Internal Assessment}\\
 \bigskip
-What is the diffraction pattern when \SI{650}{\nm} laser is obstructed by thin wires of varying widths?
+What effect does varying the diameter of a thin wire have on the width of diffraction fringes?
 }
 \author{}
 \date{}
@@ -30,216 +32,268 @@ What is the diffraction pattern when \SI{650}{\nm} laser is obstructed by thin w
 \begin{document}
 \maketitle
 
-\section*{Introduction}
-The phenomenon of optical diffraction can be roughly defined as the bending of light   (as waves) around an aperture or the corners of an obstacle.
+\section{Rationale}
+The laws of optics govern how our eyes perceive the world around us. 
+Reflection, refraction, and diffraction are common phenomena in our everyday life, occurring with not only sound waves but also electromagnetic waves. 
+Of particular interest to me is the phenomenon of optical diffraction, which in the IB physics textbook is described as \autocite[151]{textbook}: 
+\begin{quote}
+``[...] when waves pass through a narrow gap or slit, or when their path is partly blocked by an object, the waves spread out [...].''    
+\end{quote}
 
-\section*{Theory}
+In class, we investigated the diffraction patterns when monochromatic laser light passes through a single \textit{slit}. 
+The single slit diffraction experiment is rather well known as it demonstrates the wave properties of light. 
+Yet, what happens when an \textit{object} obstructs the path of light is only very briefly mentioned with an equation of the position of the first diffraction minimum in topic 12 \autocite[495]{textbook}. 
+My background research showed that it is possible to measure the diameter of thin wires with optical diffraction \autocite{wire_measurement}. 
+This leads to my research question: 
+what effect does varying the diameter of a thin wire have on the width of diffraction fringes?
 
-Babinet's principle \cite{babinet}: 
-\begin{displayquote}
-    ``Suppose that the eye observes a point source of light. If a small opaque object is placed just off the line of sight, the effects of this object is the same as that of a precisely similar aperture illuminated from the same source.''
-\end{displayquote}
+In addition, I wish to improve on the procedure of the single slit diffraction experiment.
+Many inaccuracies arose from directly measuring the width of the central bright fringe with a ruler on the screen.
+The screen was a white piece of paper taped on the wall, which moved easily when the ruler was placed on it. 
+Moreover, identifying the precise positions of the minima with the naked eye was not easy on a screen without visual scales.
+Instead, an RGB photo analysis will overcome these issues.
+Photographing the diffraction patterns from a distance does not move the screen, and as such does not introduce additional systematic errors.
+A digital analysis of the photos can then be carried out using the computer vision library OpenCV \autocite{opencv_library}, allowing the locations of the minima to be determined to a greater precision.
+It should be noted that, whilst the width of a bright fringe is measured in pixels on the photo, it suffices to use a millimetre paper as the screen to convert such width to SI units which facilitates calculations in the rest of the investigation.
 
-\newpage
+\section{Background Theory}
+\begin{figure}[H]
+\centering
+\minipage{0.5\textwidth}
+\centering
+\begin{tikzpicture}
+    \draw[cyan, thick] (0, -3) -- (0, 3);
+    \filldraw[cyan] (0, -2) circle (1pt);
+    \filldraw[cyan] (0, -1) circle (1pt);
+    \filldraw[cyan] (0, 0) circle (1pt);
+    \filldraw[cyan] (0, 1) circle (1pt);
+    \filldraw[cyan] (0, 2) circle (1pt);
+    \draw (0.25, -3) arc (-90:90:1cm);
+    \draw (0.25, -2) arc (-90:90:1cm);
+    \draw (0.25, -1) arc (-90:90:1cm);
+    \draw (0.25, 0) arc (-90:90:1cm);
+    \draw (0.25, 1) arc (-90:90:1cm);
+    \draw[cyan, thick] (2, -3) -- (2, 3);
+    \draw[very thick] (2, -1) -- (2, 1);
+    \node[right] at (2, 0) {$d$};
+    \node[above] at (-0.5, 3) {old wavefront};
+    \node[above] at (2.5, 3) {new wavefront};
+\end{tikzpicture}
+\caption{Light before reaching the wire}
+\label{fig:theory_before}
+\endminipage\hfill
+\minipage{0.5\textwidth}
+\centering
+\begin{tikzpicture}
+    \draw[very thick] (0, -1) -- (0, 1);
+    \draw (0, -1) -- (0, -2);
+    \node[left] at (0, 0) {$d$};
+    \draw[dashed] (0, 1) -- (2, 1);
+    \draw (0.7, 1) arc (0:34:0.5cm);
+    \node[above] at (1.1, 1) {$\theta$};
+    \draw[cyan, thick, ->] (0, 2) -- (1, 2.5);
+    \draw[cyan, thick] (0, 2) -- (2, 3.0);
+    \draw[teal, thick, ->] (0, 1) -- (1, 1.5);
+    \draw[teal, thick] (0, 1) -- (2, 2.0);
+    \draw[cyan, thick, ->] (0, -1) -- (1, -0.5);
+    \draw[cyan, thick] (0, -1) -- (2, 0.0);
+    \draw[teal, thick, ->] (0, -2) -- (1, -1.5);
+    \draw[teal, thick] (0, -2) -- (2, -1.0);
+    \draw[dashed] (0, 1) -- (1.2, -1.4);
+    \draw (1.0, -1) -- (0.6, -1.2);
+    \draw (0.6, -1.2) -- (0.8, -1.6);
+    \draw (0, 0.3) arc (-90:-56:0.5cm);
+    \node[above] at (0.5, -0.75) {$\lambda$};
+    \node[left] at (0, -1.5) {$\frac{1}{2} d$};
+    \node[below] at (0.6, -1.7) {$\frac{3}{2}\lambda$};
+    \draw [dashed] (2.5, 1) -- (3, 1);
+    \draw[thick] (3, -2.0) -- (3, 4.0);
+    \node[below] at (3, -2.2) {screen};
+    \draw (3, 2.5) circle (1pt);
+    \draw (3, 1) circle (1pt);
+    \node[right] at (3, 1.75) {$s$};
+    \node[below] at (2.5, 1.0) {$D$}; 
+\end{tikzpicture}
+\caption{Light after reaching the wire}
+\label{fig:theory_after}
+\endminipage\hfill
+\end{figure}
+Let us consider the light waves immediately after being obstructed by the thin wire. 
+Huygen's principle states that every point on a wavefront emits wavelets, i.e., rays that start in phase and propagate in all directions. 
+The wavefront when the laser light hits the wire of diameter $d$ is shown in \cref{fig:theory_before}. 
 
-\section*{Materials}
-\begin{itemize}
-\itemsep 0em
-    \item Tape
-    \item Millimetre paper (\SI{1.0+-.5}{\mm} squares)
-    \item Measuring tape (precision: \SI{+-.05}{\cm})
-    \item Monochromatic laser diode (wavelength: \SI{650+-10}{\nm} \cite{laser-specs})
-    %TODO 38 < 40
-    \item Diapositive for diffraction: 6 slits of width varying between \SI{40}{\um} and \SI{400}{\um}
-    \item Wire-holding stand: 6 wires of of width varying between \SI{40}{\um} and \SI{150}{\um} \cite{wires-specs}
-\end{itemize}
+Moreover, as shown in \cref{fig:theory_after}, assuming that the diameter $d$ of the wire is negligible compared to the distance $D$ from the wire to the screen, we can consider the rays hitting the screen at the same position as practically parallel. 
+The rays travelling at an angle of $\theta$ relative to the centre line hit the screen at a distance of $s$ from the centre.
 
+However, there is a difference in the path lengths of these rays. \Cref{fig:theory_after} shows two light rays interfering destructively: 
+there is a path difference of $\frac{3}{2}\lambda$ between the two rays in teal.
+We hypothesise that similarly, each ray beneath the wire interferes destructively with a ray above the wire since the path difference is an integer multiple of $\frac{1}{2}\lambda$.
+In this case, the minimum occurs at $\sin\theta = \lambda / d$.
+More generally, the positions of all the minima are given by
+\[\sin\theta = \frac{n \lambda}{d},\ n \in \Z^*.\]
+With $s \ll D$, we also have $\sin\theta = \tan\theta = s / D$. 
+We then obtain
+\[
+s = n \frac{\lambda D}{d},
+\]
+and as a consequence, each bright fringe measures
+\begin{align}
+    \Delta s = \frac{\lambda D}{d}\label{eq:hypothesis}
+\end{align}
+wide except for the central bright fringe which has double this width.
+
+We now verify this hypothesised relationship between $\Delta s$ and $d$ with experimental data.
+
+\section{Variables}
+\subsection*{Independent variable}
+$d$, diameter of the wire. Manufacturer's values (in \si{\um}): $38, 50, 76, 100, 120, 150$.
 \begin{figure}[H]
     \centering
-    \minipage{0.5\textwidth}
-        \centering
-        \includegraphics[width=.85\textwidth]{img/slits}
-    \endminipage\hfill
-    \minipage{0.5\textwidth}
-        \centering
-        \includegraphics[width=.85\textwidth]{img/wires}
-    \endminipage\hfill
-    \caption{Test test. }
-    \label{fig:slits-wires}
+    \includegraphics[width=0.4\textwidth]{img/wires}
+    \caption{Diameters of wires used in the experiment}
+    \label{fig:wires}
 \end{figure}
 
-\section*{Method}
-To minimise the impact of ambient lighting on the diffraction pattern observed, the experiment is carried out in a dark room. Since the pupil then dilates to improve vision by allowing more light into the eye, special care should be taken to avoid shining the laser beam or its reflection into the eye. Possible measures to prevent eye damages include ensuring that no one else is in the same room and not pointing the laser on reflective surfaces.
+\subsection*{Dependent variable}
+$\Delta s$, width of bright fringes. Measured against a piece of millimetre paper in \si{\mm} with computer assistance.
+
+\subsection*{Controlled variables}
+\begin{itemize}
+\itemsep 0em
+    \item $\lambda$, wavelength of laser light --- \SI{650+-10}{\nm} \autocite{laser-specs}
+    \item $D$, distance from the wire to the screen --- \SI{2.240+-0.005}{\m}, with a tape measure
+    \item Angle and position from which the photos are taken
+\end{itemize}
+$\lambda$ and $D$ are controlled because they are part of \cref{eq:hypothesis}, the hypothesised relationship between $\Delta s$ and $d$. 
+The photographing is also controlled to avoid systematic errors.
+
+\section{Method}
+To minimise the impact of ambient lighting on the diffraction pattern observed, we carried out the experiment in a dark room. 
+Since the pupil then dilates to improve vision by allowing more light into the eye, special care was taken to avoid shining the laser beam or its reflection into the eye. 
+Measures to prevent eye damages included ensuring that no one else is in the same room and not pointing the laser on reflective surfaces.
 
 \begin{enumerate}
-\itemsep 0em
-    \item Fix the end of the measuring tape between the table and the wall, and extend the tape in a straight line up to the other end of the table.
-    \item Using the reading from the measuring tape, place the middle of the stand (where the wires are located) at a distance of \SI{2.50}{\m} away from the wall. \label{step:place-stand}
+\itemsep 0.2em
+    \item Fix the end of the tape measure between the table and the wall, and extend the tape in a straight line up to the other end of the table.
+    \item Using the reading from the measuring tape, place the middle of the stand (where the wires are located) at a distance of \SI{2.240+-0.005}{\m} away from the wall. \label{step:place-stand}
     \item Set up the laser diode behind the stand so that the wire obstructs the laser beam by padding the diode with one or two thick books from below if needed (see \cref{fig:setup}). Turn on the laser diode. \label{step:place-laser}
-    \item Tape a piece of millimetre paper on the wall, aligning the centre of the paper with the laser beam while avoiding looking into the laser beam.
-    \item Take at least 3 pictures of the millimetre paper on which the diffraction pattern is observed. \label{step:get-pattern}
-    \item Move the stand so that another wire of a different width is obstructing the laser beam. Make sure that the distance between the wires and the wall remains to be \SI{2.50}{\m}. Repeat step \ref{step:get-pattern}. \label{step:change-wire}
-    \item Repeat step \ref{step:change-wire} until the diffraction pattern of all 6 wires are recorded. \label{step:iterate-wire}
-    \item Take the millimetre paper and the tapes off from the wall. Turn off the laser diode. \label{step:clean-up}
-    \item Replace the wire-holding stand with the diapositive with slits mounted on another stand. Repeat steps \ref{step:place-stand}--\ref{step:iterate-wire}.
-    \item Clean up following the instructions from \ref{step:clean-up}. Put away the experimental apparatus.
-\end{enumerate}
-
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/setup}
-    \caption{Setup of the experiment. The exposure is modified for better visibility. }
+    \caption{Setup of the experiment; exposure modified for better visibility}
     \label{fig:setup}
 \end{figure}
+    \item Tape a piece of millimetre paper on the wall, aligning the centre of the paper with the laser beam while avoiding looking into the laser beam.
+    \item Take a photo of the millimetre paper on which the diffraction pattern is observed. \label{step:get-pattern}
+    \item Move the stand so that another wire of a different diameter is obstructing the laser beam. Make sure that the distance between the wires and the wall remains to be \SI{2.240+-0.005}{\m}. Repeat step \ref{step:get-pattern}. \label{step:change-wire}
+    \item Repeat step \ref{step:change-wire} until the diffraction pattern of all 6 wires are recorded. \label{step:iterate-wire}
+    \item Take the millimetre paper and the tapes off from the wall. Turn off the laser diode. \label{step:clean-up}
+\end{enumerate}
 
-\section*{Raw Data}
+\section{Raw Data}
+
 \begin{figure}[H]
-    \renewcommand{\thesubfigure}{1a}
-    \subfloat[Wire; $\text{width} = \SI{38}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{img/wires/38}
+\centering
+    \subfloat[\SI{38}{\um}]{
+        \includegraphics[width=\textwidth]{img/wires/38}
     }
-    \renewcommand{\thesubfigure}{1b}
-    \subfloat[Slit; $\text{width} = \SI{40}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{img/slits/40}
+\end{figure}
+\begin{figure}[H]
+\ContinuedFloat
+\centering
+    \subfloat[\SI{50}{\um}]{
+        \includegraphics[width=\textwidth]{img/wires/50}
+    }    
+
+    \subfloat[\SI{76}{\um}]{
+        \includegraphics[width=\textwidth]{img/wires/76}
     }
     
-    \renewcommand{\thesubfigure}{2a}
-    \subfloat[Wire; $\text{width} = \SI{50}{\um}$]{
-        \includegraphics[width=0.48\textwidth]{img/wires/50}
-    }
-    \renewcommand{\thesubfigure}{2a}    
-    \subfloat[Slit; $\text{width} = \SI{50}{\um}$]{
-        \includegraphics[width=0.48\textwidth]{img/slits/50}
-    }
-
-    \renewcommand{\thesubfigure}{3a}
-    \subfloat[Wire; $\text{width} = \SI{100}{\um}$]{
-        \includegraphics[width=0.48\textwidth]{img/wires/100}
-    }
-    \renewcommand{\thesubfigure}{3b}
-    \subfloat[Slit; $\text{width} = \SI{100}{\um}$]{
-        \includegraphics[width=0.48\textwidth]{img/slits/100}
-    }
-
-    \renewcommand{\thesubfigure}{4a}    
-    \subfloat[Wire; $\text{width} = \SI{120}{\um}$]{
-        \includegraphics[width=0.48\textwidth]{img/wires/120}
-    }
-    \renewcommand{\thesubfigure}{4b}
-    \subfloat[Slit; $\text{width} = \SI{120}{\um}$]{
-        \includegraphics[width=0.48\textwidth]{img/slits/120}
+    \subfloat[\SI{100}{\um}]{
+        \includegraphics[width=\textwidth]{img/wires/100}
     }
     
-    \caption{Diffraction patterns produced by slits and wires of similar or identical widths. }
-    \label{fig:patterns}
+    \subfloat[\SI{120}{\um}]{
+        \includegraphics[width=\textwidth]{img/wires/120}
+    }
+    
+    \subfloat[\SI{150}{\um}]{
+        \includegraphics[width=\textwidth]{img/wires/150}
+    }    
+    \caption{Diffraction patterns produced by wires of varying diameters}
 \end{figure}
 
-Qualitatively, the geometry of the diffraction pattern produced when the laser beam is obstructed by a single thin wire is indeed identical to that of the single-slit diffraction pattern: both consist of a series of dark and bright fringes, contain a central bright fringe corresponding to the principle maximum, and demonstrate that the intensity of subsequent maxima decreases significantly. A discrepancy occurs at the centre of the central bright fringe -- the wire diffraction pattern clearly shows the 2D Gaussian distribution of the laser beam's intensity, while the slit diffraction pattern does not. This can be explained by the fact that the width of the slit containing the wire (\SI{4.5}{\mm} \cite{wire_measurement}) is much bigger than the width of the diffraction slit (\SI{40}{\um}--\SI{400}{\um}) and allows more light to pass through.
+The diffraction patterns produced are qualitatively akin to the ones from the single slit diffraction experiment. 
+We observe a series of dark and bright fringes: 
+there is a central bright fringe; 
+the intensity of subsequent bright fringes decreases significantly. 
+Overall, the width of bright diffraction fringes appears decrease as the wire diameter increases. 
 
+\section{Processed Data}
+We provide a sample calculation below using a photo from the $d = \SI{100}{\um}$ trial.
 
-\section*{Processed Data}
-One advantage of having pictures of the diffraction patterns in a digital format is that the experimental data can be processed with computer programs using OpenCV \cite{opencv_library}.
-
-Firstly, a Python script \cite{py_extract} is devised to find the main axis of the diffraction pattern:
+In order to obtain $\Delta s$ in \cref{eq:hypothesis}, we firstly need to extract a 1D array of the relative intensities capturing the diffraction pattern from the 2D photo. 
+This is achieved with a Python script \autocite{py_extract} by finding a line passing through all the diffraction fringes, as shown in \cref{fig:processed-axis}.
 
 \begin{figure}[H]
-    \centering
     \includegraphics[width=\textwidth]{scripts/processed-data/axis}
-    \caption{Main axis (blue line) of the diffraction pattern. Slit; $\text{width} = \SI{100}{\mm}$. }
-    \label{fig:mains-axis}
+    \caption{Line (in blue) passing through all the diffraction fringes}
+    \label{fig:processed-axis}
 \end{figure}
 
-Since the laser beam is red, the BLUE and GREEN channels may be omitted, and the RED channel of the image is extracted. Then, for each pixel along the main axis, the intensity (between 0 and 255, both ends included) is recorded and stored in an array. The results obtained by transforming one picture for each trial are shown below. 
+Since the laser beam is red, the BLUE and GREEN channels may be omitted, and only the RED channel of the image is considered. 
+The diffraction pattern is then represented by an array of values between 0 and 255 --- with 0 corresponding to black and 255 corresponding to the brightest saturated red --- for each pixel along the line. 
+
+Before proceeding to calculate an average value of $\Delta s$ for this photo, we firstly want to convert the fringe width from pixels to millimetres. 
+This is where the millimetre paper comes into play. 
+By convention, we define the top left corner of the image to be of pixel coordinates $(0, 0)$. 
+A point on the millimetre paper occupies a square whose 2 opposite corners are at $(2375, 71)$ and $(2381, 75)$; 
+i.e., this point's pixel coordinates are $(2378 \pm 3, 73 \pm 2)$. 
+In the same manner, it is determined that another point which is \SI{20.0}{\mm} horizontally and \SI{1.0}{\mm} vertically apart on the millimetre paper has pixel coordinates of $(2660 \pm 3, 60 \pm 2)$. 
+In other words, 
+\[ \sqrt{20.0^2 + 1.0^2} = \SI{20.0}{\mm} \]
+on the millimetre paper is equivalent to a pixel distance of
+\[ \sqrt{ (2378 - 2660)^2 + (73 - 60)^2 } = \SI{282}{\px}; \]
+i.e., $\SI{1}{\px} = \SI{0.0709}{\mm}$ with $0.0709 = 20 / 282$.
+We will not present the derivation of the associated uncertainty, since it becomes apparent later that the uncertainty of \SI{+-2.19}{\%} can be safely ignored.
+
+Now that we have converted the position from pixels to millimetres, we need to calculate the widths of diffraction fringes from the positions of the minima. 
+As shown in \cref{fig:intensity}, the experimental data contain some significant noises, especially in the region of the central bright fringe. 
 
 \begin{figure}[H]
-    \renewcommand{\thesubfigure}{a}
-    \subfloat[Wire; $\text{width} = \SI{38}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{scripts/processed-data/wires/38}
-    }
-    \renewcommand{\thesubfigure}{g}
-    \subfloat[Slit; $\text{width} = \SI{40}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{scripts/processed-data/slits/40}
-    }
-    
-    \renewcommand{\thesubfigure}{b}
-    \subfloat[Wire; $\text{width} = \SI{50}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{scripts/processed-data/wires/50}
-    }
-    \renewcommand{\thesubfigure}{h}
-    \subfloat[Slit; $\text{width} = \SI{50}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{scripts/processed-data/slits/50}
-    }
-
-    \renewcommand{\thesubfigure}{c}
-    \subfloat[Wire; $\text{width} = \SI{76}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{scripts/processed-data/wires/76}
-    }
-    \renewcommand{\thesubfigure}{i}
-    \subfloat[Slit; $\text{width} = \SI{100}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{scripts/processed-data/slits/100}
-    }
-
-    \renewcommand{\thesubfigure}{d}
-    \subfloat[Wire; $\text{width} = \SI{100}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{scripts/processed-data/wires/100}
-    }
-    \renewcommand{\thesubfigure}{j}
-    \subfloat[Slit; $\text{width} = \SI{120}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{scripts/processed-data/slits/120}
-    }
-
-    \renewcommand{\thesubfigure}{e}
-    \subfloat[Wire; $\text{width} = \SI{120}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{scripts/processed-data/wires/120}
-    }
-    \renewcommand{\thesubfigure}{k}
-    \subfloat[Slit; $\text{width} = \SI{280}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{scripts/processed-data/slits/280}
-    }
-
-    \renewcommand{\thesubfigure}{f}
-    \subfloat[Wire; $\text{width} = \SI{150}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{scripts/processed-data/wires/150}
-    }
-    \renewcommand{\thesubfigure}{l}
-    \subfloat[Slit; $\text{width} = \SI{400}{\um}$.]{
-        \includegraphics[width=0.48\textwidth]{scripts/processed-data/slits/400}
-    }
-    
-    \centering
-    \includegraphics[width=\textwidth]{scripts/processed-data/colour-bar.png}
-    
-    \caption{Variation in RED intensity along the main axis of the diffraction pattern. }
-    \label{fig:processed-patterns}
+    \includegraphics[width=\textwidth]{scripts/processed-data/intensity}
+    \caption{Variation of pixel intensity across the diffraction pattern}
+    \label{fig:intensity}
 \end{figure}
+
+To overcome this, we applied the Savitzky-Golay filter \autocite{scipy_smooth_filter} and programatically detected the minima after smoothing the data. 
+The average width of diffraction fringes for this photo of the $d = \SI{100}{\um}$ trial is then calculated to be \SI{16.0+-1.1}{\mm}, where \SI{+-1.1}{\mm} is the standard deviation.
+
+Repeating the above procedure for all the other photos, we obtain the following figures:
+
+\begin{table}[H]
+    \centering
+    \caption{Fringe width versus wire diameter}
+    \begin{tabular}{ |c|c|c| }
+        \hline
+        \textbf{Wire diameter $d$} (\si{\um}) &
+        \textbf{Average fringe width $\Delta s$} (\si{\mm}) \\
+        \hline
+\num{ 38 } & \num{ 39.5 (11) } \\ \hline
+\num{ 50 } & \num{ 29.6 (15) } \\ \hline
+\num{ 76 } & \num{ 20.4 (9) } \\ \hline
+\num{ 100 } & \num{ 16.0 (11) } \\ \hline
+\num{ 120 } & \num{ 13.4 (8) } \\ \hline
+\num{ 150 } & \num{ 10.8 (7) } \\ \hline
+    \end{tabular}
+\end{table}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{img/data}
-    \caption{Width of the central bright fringe versus the width of wire or slit. }
-    \label{fig:data}
+    \includegraphics[width=\textwidth]{scripts/processed-data/ds_vs_d}
+    \caption{Fringe width versus wire diameter}
+    \label{fig:ds_vs_d}
 \end{figure}
-
-\section*{Results}
-
-\section*{Evaluation}
-\begin{itemize}
-\itemsep 0em
-    \item Fraunhofer diffraction (approximate) $\neq$ Fresnel diffraction (exact); yet the mathematics of Fresnel diffraction is so complex that the solutions become intractable
-    \item Validity of Babinet's principle: the requirements of the screen and aperture/obstacle are not easily met \cite{validity}
-    \item Instead of photographic method, intensity sensor can be used; albeit accurate, this method is time-consuming and requires treatment of speckle noise of the laser
-\end{itemize}
-
-\section*{Conclusion}
-
-\section*{Extensions}
-\begin{itemize}
-\itemsep 0em
-    \item Application: measuring hair width / thin wire width \cite{wire_measurement}
-    \item Other shapes rather than slit/wire -- circular aperture: in this case, $m = 1.22$
-    \item Babinet's Principle states that ``the diffraction from an array of objects is the same as that from a corresponding array of opaque objects''; a novel application is the determination of the diameter of blood cells \cite{blood_cell}; Bowlt \cite{blood_cell_success} has collected data using this approach; history: Young, Newton, Alan and Ponder, Krakau has considered this approach prior to Bowlt; normal red blood cells are of size \SI{6}{\um} to \SI{8}{\um}.
-    \item Explains the phenomenon of 'floaters'
-\end{itemize}
 
 \printbibliography
 
