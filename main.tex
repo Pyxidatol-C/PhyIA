@@ -53,8 +53,8 @@ The screen was a white piece of paper taped on the wall, which moved easily when
 Moreover, identifying the precise positions of the minima with the naked eye was not easy on a screen without visual scales.
 Instead, an RGB photo analysis will overcome these issues.
 Photographing the diffraction patterns from a distance does not move the screen, and as such does not introduce additional systematic errors.
-A digital analysis of the photos can then be carried out using the computer vision library OpenCV \autocite{opencv_library}, allowing the locations of the minima to be determined to a greater precision.
-It should be noted that, whilst the width of a bright fringe is measured in pixels on the photo, it suffices to use a millimetre paper as the screen to convert such width to SI units which facilitates calculations in the rest of the investigation.
+Digital analysis of the photos can then be carried out using the computer vision library OpenCV \autocite{opencv_library}, allowing the locations of the minima to be determined with greater precision.
+It should be noted that whilst the width of a bright fringe is measured in pixels on the photo, it suffices to use a millimetre paper as the screen to convert such width to SI units --- this facilitates calculations in the rest of the investigation.
 
 \section{Background Theory}
 \begin{figure}[H]
@@ -161,7 +161,7 @@ $\Delta s$, width of bright fringes. Measured against a piece of millimetre pape
 \begin{itemize}
 \itemsep 0em
     \item $\lambda$, wavelength of laser light --- \SI{650+-10}{\nm} \autocite{laser-specs}
-    \item $D$, distance from the wire to the screen --- \SI{2.240+-0.005}{\m}, with a tape measure
+    \item $D$, distance from the wire to the screen --- \SI{2.250+-0.010}{\m}, with a tape measure
     \item Angle and position from which the photos are taken
 \end{itemize}
 $\lambda$ and $D$ are controlled because they are part of \cref{eq:hypothesis}, the hypothesised relationship between $\Delta s$ and $d$. 
@@ -175,7 +175,7 @@ Measures to prevent eye damages included ensuring that no one else is in the sam
 \begin{enumerate}
 \itemsep 0.2em
     \item Fix the end of the tape measure between the table and the wall, and extend the tape in a straight line up to the other end of the table.
-    \item Using the reading from the measuring tape, place the middle of the stand (where the wires are located) at a distance of \SI{2.240+-0.005}{\m} away from the wall. \label{step:place-stand}
+    \item Using the reading from the measuring tape, place the wire stand at a distance of \SI{2.250+-0.010}{\m} away from the wall. \label{step:place-stand}
     \item Set up the laser diode behind the stand so that the wire obstructs the laser beam by padding the diode with one or two thick books from below if needed (see \cref{fig:setup}). Turn on the laser diode. \label{step:place-laser}
 \begin{figure}[H]
     \centering
@@ -185,8 +185,8 @@ Measures to prevent eye damages included ensuring that no one else is in the sam
 \end{figure}
     \item Tape a piece of millimetre paper on the wall, aligning the centre of the paper with the laser beam while avoiding looking into the laser beam.
     \item Take a photo of the millimetre paper on which the diffraction pattern is observed. \label{step:get-pattern}
-    \item Move the stand so that another wire of a different diameter is obstructing the laser beam. Make sure that the distance between the wires and the wall remains to be \SI{2.240+-0.005}{\m}. Repeat step \ref{step:get-pattern}. \label{step:change-wire}
-    \item Repeat step \ref{step:change-wire} until the diffraction pattern of all 6 wires are recorded. \label{step:iterate-wire}
+    \item Move the stand so that another wire of a different diameter is obstructing the laser beam. Make sure that the distance between the wires and the wall remains to be \SI{2.250+-0.010}{\m} (the uncertainty comes from the start and end). Repeat step \ref{step:get-pattern}. \label{step:change-wire}
+    \item Repeat step \ref{step:change-wire} until the diffraction patterns of all 6 wires are recorded. \label{step:iterate-wire}
     \item Take the millimetre paper and the tapes off from the wall. Turn off the laser diode. \label{step:clean-up}
 \end{enumerate}
 
@@ -195,30 +195,30 @@ Measures to prevent eye damages included ensuring that no one else is in the sam
 \begin{figure}[H]
 \centering
     \subfloat[\SI{38}{\um}]{
-        \includegraphics[width=\textwidth]{img/wires/38}
+        \includegraphics[width=.984\textwidth]{img/wires/38}
     }
 \end{figure}
 \begin{figure}[H]
 \ContinuedFloat
 \centering
     \subfloat[\SI{50}{\um}]{
-        \includegraphics[width=\textwidth]{img/wires/50}
+        \includegraphics[width=.984\textwidth]{img/wires/50}
     }    
 
     \subfloat[\SI{76}{\um}]{
-        \includegraphics[width=\textwidth]{img/wires/76}
+        \includegraphics[width=.984\textwidth]{img/wires/76}
     }
     
     \subfloat[\SI{100}{\um}]{
-        \includegraphics[width=\textwidth]{img/wires/100}
+        \includegraphics[width=.984\textwidth]{img/wires/100}
     }
     
     \subfloat[\SI{120}{\um}]{
-        \includegraphics[width=\textwidth]{img/wires/120}
+        \includegraphics[width=.984\textwidth]{img/wires/120}
     }
     
     \subfloat[\SI{150}{\um}]{
-        \includegraphics[width=\textwidth]{img/wires/150}
+        \includegraphics[width=.984\textwidth]{img/wires/150}
     }    
     \caption{Diffraction patterns produced by wires of varying diameters}
 \end{figure}
@@ -227,12 +227,12 @@ The diffraction patterns produced are qualitatively akin to the ones from the si
 We observe a series of dark and bright fringes: 
 there is a central bright fringe; 
 the intensity of subsequent bright fringes decreases significantly. 
-Overall, the width of bright diffraction fringes appears decrease as the wire diameter increases. 
+Overall, the width of bright diffraction fringes appears to decrease as the wire diameter increases. 
 
 \section{Processed Data}
 We provide a sample calculation below using a photo from the $d = \SI{100}{\um}$ trial.
 
-In order to obtain $\Delta s$ in \cref{eq:hypothesis}, we firstly need to extract a 1D array of the relative intensities capturing the diffraction pattern from the 2D photo. 
+In order to obtain $\Delta s$ in \cref{eq:hypothesis}, we first need to extract a 1D array of the relative intensities capturing the diffraction pattern from the 2D photo. 
 This is achieved with a Python script \autocite{py_extract} by finding a line passing through all the diffraction fringes, as shown in \cref{fig:processed-axis}.
 
 \begin{figure}[H]
@@ -244,7 +244,7 @@ This is achieved with a Python script \autocite{py_extract} by finding a line pa
 Since the laser beam is red, the BLUE and GREEN channels may be omitted, and only the RED channel of the image is considered. 
 The diffraction pattern is then represented by an array of values between 0 and 255 --- with 0 corresponding to black and 255 corresponding to the brightest saturated red --- for each pixel along the line. 
 
-Before proceeding to calculate an average value of $\Delta s$ for this photo, we firstly want to convert the fringe width from pixels to millimetres. 
+Before proceeding to calculate an average value of $\Delta s$ for this photo, we first want to convert the fringe width from pixels to millimetres. 
 This is where the millimetre paper comes into play. 
 By convention, we define the top left corner of the image to be of pixel coordinates $(0, 0)$. 
 A point on the millimetre paper occupies a square whose 2 opposite corners are at $(2375, 71)$ and $(2381, 75)$; 
@@ -255,7 +255,7 @@ In other words,
 on the millimetre paper is equivalent to a pixel distance of
 \[ \sqrt{ (2378 - 2660)^2 + (73 - 60)^2 } = \SI{282}{\px}; \]
 i.e., $\SI{1}{\px} = \SI{0.0709}{\mm}$ with $0.0709 = 20 / 282$.
-We will not present the derivation of the associated uncertainty, since it becomes apparent later that the uncertainty of \SI{+-2.19}{\%} can be safely ignored.
+We will not present the derivation of the associated uncertainty, since it becomes apparent later that the uncertainty of \SI{+-2.19}{\%} can be safely ignored due to more significant standard deviations.
 
 Now that we have converted the position from pixels to millimetres, we need to calculate the widths of diffraction fringes from the positions of the minima. 
 As shown in \cref{fig:intensity}, the experimental data contain some significant noises, especially in the region of the central bright fringe. 
@@ -266,7 +266,7 @@ As shown in \cref{fig:intensity}, the experimental data contain some significant
     \label{fig:intensity}
 \end{figure}
 
-To overcome this, we applied the Savitzky-Golay filter \autocite{scipy_smooth_filter} and programatically detected the minima after smoothing the data. 
+To overcome this, we applied the Savitzky-Golay filter \autocite{scipy_smooth_filter} and programmatically detected the minima after smoothing the data. 
 The average width of diffraction fringes for this photo of the $d = \SI{100}{\um}$ trial is then calculated to be \SI{16.0+-1.1}{\mm}, where \SI{+-1.1}{\mm} is the standard deviation.
 
 Repeating the above procedure for all the other photos, we obtain the following figures:
@@ -288,12 +288,111 @@ Repeating the above procedure for all the other photos, we obtain the following 
     \end{tabular}
 \end{table}
 
+The experimental data suggest an inversely proportional relationship between $d$ and $\Delta s$, as shown in \cref{fig:ds_vs_d}.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{scripts/processed-data/ds_vs_d}
-    \caption{Fringe width versus wire diameter}
+    \caption{Average measured fringe width against wire diameter}
     \label{fig:ds_vs_d}
 \end{figure}
+
+We then linearise the data by plotting $\Delta s$ against $\dfrac{1}{d}$:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{scripts/processed-data/ds_vs_d_lin}
+    \caption{Average fringe width against reciprocal of wire diameter} 
+    \label{fig:ds_vs_d_lin}
+\end{figure}
+
+As shown in \cref{fig:ds_vs_d_lin}, the gradient of the best fit line is equal to $1439 \frac{\si{\mm}}{\si{\per\um}} = \SI{1439}{\nm \m}$; 
+gradients of reasonable fit lines vary between \SI{1369}{\nm \m} and \SI{1550}{\nm \m}.
+
+\section{Analysis}
+\Cref{eq:hypothesis} can be rewritten as
+\begin{align}
+    \overbrace{\Delta s}^{y} 
+    = 
+    \underbrace{(\lambda D)}_{\text{gradient}} \times \overbrace{\frac{1}{d}}^{x}.
+\end{align}
+The uncertainty in the gradient of the best fit line in \cref{fig:ds_vs_d_lin} is \[\frac{1550 - 1369}{2} = \SI{90}{\nm \m}.\]
+As such, $\lambda D = \SI{1439+-90}{\nm\m}$.
+Since $D = \SI{2.250+-0.010}{\m}$ is a controlled variable,
+\begin{align*}
+    \lambda 
+    &= \SI{1439}{\nm\m} / \SI{2.250}{\m}\\
+    &= \SI{640}{\nm}
+    .
+\end{align*}
+
+Since $\lambda = \text{gradient} / D$, we have concerning the uncertainties
+\begin{align*}
+    \fracDelta{\lambda} &= \fracDelta{\text{gradient}} + \fracDelta{D}\\
+    &= \frac{90}{1439} + \frac{0.010}{2.250}\\
+    &= \SI{6.8}{\%}.
+\end{align*}
+The absolute uncertainty in $\lambda$ is then
+\begin{align*}
+    \Delta \lambda = 6.8\% \times \SI{640}{\nm} = \SI{+-42}{\nm}.
+\end{align*}
+
+Regarding the laser wavelength $\lambda$, the experimentally determined value \SI{640+-42}{\nm} is coherent with the manufacturer's value of \SI{650+-10}{\nm} \autocite{laser-specs}.
+There is a percentage error of 
+\begin{align*}
+    &\frac{\lambda_\text{accepted} - \lambda_\text{experimental}}{\lambda_\text{accepted}}\\
+    &= \frac{650 - 640}{640}\\
+    &= 1.5\%
+\end{align*}
+
+Since the percentage error of \SI{1.5}{\%} is less than the percentage uncertainty of \SI{6.8}{\%}, the experiment is valid within the limits of the apparatus used.
+Nevertheless, the non-null y-intercept of \SI{+1.37}{\mm} of the best fit line in \cref{fig:ds_vs_d_lin} indicates that there are some systematic errors, which we will discuss below.
+
+\section{Conclusion}
+The experiment has shown that obstructing a monochromatic laser light with a thin wire produces a similar pattern to that of single slit diffraction. 
+Moreover, the relationship between the wire diameter and the width of diffraction fringes can be described by \cref{eq:hypothesis}, which is in fact the same equation for fringe width in the case of single slit diffraction.
+Babinet's principle accounts for this phenomenon \autocite{babinet}:
+\begin{quote}
+    ``Suppose that the eye observes a point source of light.
+    If a small opaque object is placed just off the line of sight, the effect of this object is the same as that of a precisely similar aperture illuminated from the same source.''
+\end{quote}
+
+\section{Evaluation}
+At last, we shall address the random and systematic errors in the experiment.
+
+To start with, the measured value of $D$ represents the distance between the stand and the wall and not the actual distance from the wire to the screen:
+at one end, the measurement starts from the edge of the stand instead of the actual exact position of the wires, which is closer to the screen; 
+at the other end, the millimetre paper is not mounted perfectly flat to the wall.
+Consequently, the measured value of $D$ is greater than the actual value.
+Since we calculate the laser wavelength using $\lambda = \text{gradient} / D$, the experimentally determined value of $\lambda$ will be smaller than the actual value. Together with the uncertainty of \SI{+-10}{\nm} in the manufacturer's value \autocite{laser-specs}, this accounts for the discrepancy between the calculated value of \SI{640}{\nm} and the accepted value of \SI{650}{\nm}.
+The straightforward solution is to measure the distance between the exact positions of the wire and the screen.
+However, due to the practical difficulties, it is much more favourable to simply increase $D$ so that the inaccuracy becomes less significant. 
+In doing so, we also decrease the fractional uncertainty in $D$, and as such reduce the uncertainty of \SI{6.8}{\%} in $\lambda$ making the results more precise.
+
+Another systematic error arises from determining the locations of destructive interference. 
+As shown in \cref{fig:intensity}, there are significant noises in the unprocessed experimental data. 
+Inevitably, the Savitzky-Golay filter that we applied to reduce these noises distorts the diffraction pattern: 
+the minima in the data after smoothing are more spread out to the edges of the screen; 
+this effect is more marked for fringes that are further away from the centre. 
+Overall, the programmatically determined fringe widths are greater than the actual widths. 
+The positive y-intercept of the best fit line in \cref{fig:ds_vs_d_lin} reflects this systematic error. 
+One solution is to use a high-quality laser and a high-resolution charge-coupled device as the screen to record the intensity in the diffraction pattern with high precision. 
+This method is nonetheless costly, since the equipment usually is not available in a school laboratory. 
+Another more practical solution is proposed by Wu et al.\ \autocite{fourier} in 2015 using Fourier transform, an alternative mathematical method to process the experimental intensity data without degrading the accuracy.
+
+An advantage of the experiment is that it is easy to set up with readily available materials, and the use of digital photo analysis allows rapid data collection and processing without introducing human errors. 
+In spite of that, care must be taken to fix the position and angle of the camera to avoid distorting the photographed diffraction pattern and as such giving rise to important systematic errors.
+
+One possible way to extend the experiment is to study the diffraction pattern when other types of thin obstacles such as filament or hair are used. 
+The larger range of diameters helps improve the precision of the results.
+The uncertainty of \SI{6.8}{\%} in $\lambda$ mostly results from the uncertainty in the gradient of the best fit line. 
+Recall that the maximum gradient of an acceptable fit line is given by
+\[ \frac{(y_{max} + \Delta y_{max}) - (y_{min} - \Delta y_{min})}{ x_{max} - x_{min} } 
+= 
+\overbrace{\frac{y_{max} - y_{min}}{x_{max} - x_{min}}}^{\text{slope of best fit line}} + \overbrace{\frac{\Delta y_{max} + \Delta y_{min} }{x_{max} - x_{min}}}^{\text{uncertainty in slope}}. \]
+As long as the uncertainties in the average fringe width $\Delta y_{max}$ and $\Delta y_{min}$ do not become much more significant as the diameter becomes very small or very big, a greater value of $x_{max} - x_{min}$ decreases the uncertainty in the gradient. 
+By using \cref{eq:hypothesis}, we can then extrapolate the diameter of an unknown obstacle with high precision from the width of diffraction fringes produced. 
+This has been applied in real life to accurately measure the size of red blood cells using optical diffraction. \autocite{blood_cell_success}
 
 \printbibliography
 
